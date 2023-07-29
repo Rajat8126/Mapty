@@ -136,6 +136,29 @@ class App {
     this._setLocalStorage();
   }
 
+  _deleteItem(e) {
+    if (e.target.classList.contains("dlt")) {
+      const workoutEl = e.target.closest(".workout");
+      if (!workoutEl) return;
+
+      const workoutId = workoutEl.dataset.id;
+
+      // Find the index of the workout with the matching ID
+      const workoutIndex = this.#workouts.findIndex(
+        (workout) => workout.id === workoutId
+      );
+
+      // Remove the workout from the #workouts array
+      app.#workouts.splice(workoutIndex, 1);
+
+      // Remove the workout element from the DOM
+      workoutEl.remove();
+
+      // Update the local storage
+      app._setLocalStorage();
+    }
+  }
+
   _renderWorkout(workout) {
     let html = `
     <li class="workout workout--${workout.type}" data-id="${workout.id}">
