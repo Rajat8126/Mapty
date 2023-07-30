@@ -58,6 +58,7 @@ class App {
   }
 
   _moveToPopup(e) {
+    if (e.target.classList.contains("dlt")) return;
     if (!this.#map) return;
 
     const workoutEl = e.target.closest(".workout");
