@@ -144,6 +144,18 @@ class App {
 
       const workoutId = workoutEl.dataset.id;
 
+      //
+
+      this.#map.eachLayer((layer) => {
+        console.log(layer);
+        if (
+          layer instanceof L.Marker &&
+          layer.getPopup().getContent().includes(workoutId)
+        ) {
+          this.#map.removeLayer(layer);
+        }
+      });
+
       // Find the index of the workout with the matching ID
       const workoutIndex = this.#workouts.findIndex(
         (workout) => workout.id === workoutId
@@ -227,7 +239,9 @@ class App {
         })
       )
       .setPopupContent(
-        `${workout.type === "running" ? "🏃‍♂️" : "🚴‍♀️"} ${workout.description}`
+        `<div data-id="${workout.id}">${
+          workout.type === "running" ? "🏃‍♂️" : "🚴‍♀️"
+        } ${workout.description}</div>`
       )
       .openPopup();
   }
