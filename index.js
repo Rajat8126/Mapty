@@ -21,6 +21,12 @@ class App {
     this._getLocalStorage();
     containerWorkouts.addEventListener("click", this._moveToPopup.bind(this));
     containerWorkouts.addEventListener("click", this._deleteItem.bind(this));
+
+    containerWorkouts.addEventListener("click", (e) => {
+      if (e.target.classList.contains("Edit-btn")) {
+        app._editWorkout(e);
+      }
+    });
   }
 
   // get user location
@@ -58,7 +64,12 @@ class App {
   }
 
   _moveToPopup(e) {
-    if (e.target.classList.contains("dlt")) return;
+    if (
+      e.target.classList.contains("Edit-btn") ||
+      e.target.classList.contains("dlt")
+    )
+      return;
+
     if (!this.#map) return;
 
     const workoutEl = e.target.closest(".workout");
@@ -135,6 +146,39 @@ class App {
     // set local storage
 
     this._setLocalStorage();
+  }
+
+  _editWorkout(e) {
+    if (e.target.classList.contains("Edit-btn")) {
+      const workoutEl = e.target.closest(".workout");
+      if (!workoutEl) return;
+
+      const workoutId = workoutEl.dataset.id;
+      const workout = this.#workouts.find((work) => work.id === workoutId);
+
+      if (!workout) return;
+
+      // Show the form with workout data prefilled
+      form.classList.remove("hidden");
+      inputType.value = workout.type;
+      inputDistance.value = workout.distance;
+      inputDuration.value = workout.duration;
+      inputCadence.value = workout.cadence || "";
+      inputElevation.value = workout.elevationGain || "";
+      inputDistance.focus();
+
+      // Remove the edited workout from the workouts array
+      const workoutIndex = this.#workouts.findIndex(
+        (work) => work.id === workoutId
+      );
+      this.#workouts.splice(workoutIndex, 1);
+
+      // Remove the edited workout from the DOM
+      workoutEl.remove();
+
+      // Update the local storage
+      this._setLocalStorage();
+    }
   }
 
   _deleteItem(e) {
@@ -226,7 +270,7 @@ class App {
   }
 
   _renderWorkoutMarker(workout) {
-    console.log(workout.coords);
+    console.log("renderWorkoutMarker");
     L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
